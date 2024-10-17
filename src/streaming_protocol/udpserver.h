@@ -1,0 +1,102 @@
+/*! \file
+	\section FileCopyright Copyright Notice
+	This is free and unencumbered software released into the public domain.
+
+	Anyone is free to copy, modify, publish, use, compile, sell, or
+	distribute this software, either in source code form or as a compiled
+	binary, for any purpose, commercial or non-commercial, and by any
+	means.
+
+	In jurisdictions that recognize copyright laws, the author or authors
+	of this software dedicate any and all copyright interest in the
+	software to the public domain. We make this dedication for the benefit
+	of the public at large and to the detriment of our heirs and
+	successors. We intend this dedication to be an overt act of
+	relinquishment in perpetuity of all present and future rights to this
+	software under copyright law.
+
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+	EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+	MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+	IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+	OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+	ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+	OTHER DEALINGS IN THE SOFTWARE.
+*/
+
+#ifndef UDPSERVER_H
+#define UDPSERVER_H
+
+#include <mutex>
+
+#include "OpenSimFileLogger.h"
+#include <thread>
+
+#include <getTime.h>
+
+#include "streamer.h"
+#include "parsermanager.h"
+#include <xstypes/xssocket.h>
+#include <xstypes/xsthread.h>
+#include <xstypes/xsmath.h>
+
+#define XSENS_LOWER
+
+class UdpServer
+{
+public:
+	UdpServer(XsString address = "localhost", uint16_t port = 9763, bool record = false, std::string outDirectory = std::string(), bool recordAsXsens = true);
+
+	~UdpServer();
+
+	void readMessages();
+	void startThread();
+	void stopThread();
+
+	std::map<std::string, double> getAngle();
+	double getAngleDataTime();
+
+private:
+	std::unique_ptr<XsSocket> m_socket;
+	uint16_t m_port;
+	XsString m_hostName;
+
+	std::unique_ptr<ParserManager> m_parserManager;
+
+	volatile bool m_started, m_stopping;
+	void* data_;
+	std::mutex dataMtx_;
+	std::mutex timeMtx_;
+
+	struct Joint {
+		int32_t parent;
+		int32_t child;
+		float rotation[3];
+	};
+
+	struct Kinematics {
+		int32_t segmentId;
+		float pos[3];
+		float rotation[3];
+	};
+
+	std::vector<Kinematics> dataEuler_;
+
+	double timeStamp_;
+	std::vector<Joint> dataAngle_;
+	std::thread* xsensCom_;
+
+	OpenSimFileLogger<double>* logger_;
+
+	std::string outDirectory_;
+	bool record_;
+	double timePast_;
+
+
+	std::map<std::string, double> dataMap_;
+
+	bool recordAsXsens_;
+
+};
+
+#endif
