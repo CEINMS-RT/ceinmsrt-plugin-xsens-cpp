@@ -6,16 +6,19 @@
 Plugin [installation]() and [compilation](). How to use a [plugin]().
 
 # Xsens Plugin
+
 Plugin to receive kinematics data from the Xsens software and sensors. Optionally, you can also use it with Twincat (throught [ADS](https://www.beckhoff.com/en-ca/products/automation/twincat/tc1xxx-twincat-3-base/tc1000.html)) to combine data or send command to a robotics device using Twincat. This can be activeted by using the cmake option 'USE_TWINCAT' line 9 of the [CMakeLists.txt](https://github.com/CEINMS-RT/xsensPlugin/blob/master/CMakeLists.txt).
 
-## Installation 
+## Installation
 
 ### Xsens
+
 * Install Xsens MVN Analyze (Tested version: 2020.0) [here](https://www.xsens.com/software-downloads?hsCtaTracking=62e6fd16-1936-4f65-9660-f85c413320da%7C3912eea5-ec35-43d9-b6fb-e2d1be46ee71), including its Developer Toolkit (under the 'Tools' tab, tested version: 1.0.7)
 * Put path to Xsens MVN Developer Toolkit in PATH environment variables
 * Compile the CEINMS
 
 ### Twincat
+
 See [here](https://github.com/CEINMS-RT/xsensPlugin/blob/master/CMakeLists.txt).
 
 ## Getting Started
@@ -23,43 +26,48 @@ See [here](https://github.com/CEINMS-RT/xsensPlugin/blob/master/CMakeLists.txt).
 ### Plugin available
 
 #### Consumer nd producer plugin
+
 ``` xml
 PluginPositionAndTorqueTwinCatAndXsens
 ```
-Get ankle left and right data from Twincat. In fact this plugin does not use Xsens. Send joint torque data to Twincat.
 
+Get ankle left and right data from Twincat. In fact this plugin does not use Xsens. Send joint torque data to Twincat.
 
 ``` xml
 PluginPositionAndTorqueTwinCatAndXsensCalib
 ```
+
 Get lower-limb kinematics data from Xsens. Send joint torque data to Twincat.
 
 #### Angle only plugin
+
 ``` xml
 PluginXsensAngle
 ```
-Get lower-limb and upper-limb kinematics data from Xsens.
 
+Get lower-limb and upper-limb kinematics data from Xsens.
 
 ``` xml
 PluginXsensAngleLowerLimb
 ```
-Get upper-limb kinematics data from Xsens.
 
+Get upper-limb kinematics data from Xsens.
 
 ``` xml
 PluginXsensAngleUpperLimb 
 ```
+
 Get lower-limb kinematics data from Xsens.
 
 ### Connection to Xsens
+
 * Open Xsens MVN software
 * Click the Network Streamer for options and make sure that 1 stream is selected with port 9763, protocol UDP, stream rate max. In the datagram below select only "Joint Angles".
 * Optionally, if you want to replay a saved xsens data file, click "File -> Open" to open a file from example data 
 * Run CEINMS (with PluginXsens as angle device)
 * If recording in CEINMS (-r option) is enabled, the output folder will contain a file named "ikXsens" with the joint angles if using the twincat plugin otherwise it is save as the ik.sto.
 
-### Twincat
+### Connection to Twincat
 
 The inputs and outputs are composed of vector in ADS with the following name:
 
